@@ -1,13 +1,19 @@
 ﻿using System;
+using System.Net;
+using System.Net.Mail;
+using System.Threading;
+using System.Threading.Tasks;
+using C_InANutShell.Testing;
 
 namespace C_InANutShell
 {
-    //this comment is added on the secondaryBranch
     class Program
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+             new TestsContainer()
+                .AddTest(new DynamicArrayTest())
+                .Execute();
         }
     }
 }
