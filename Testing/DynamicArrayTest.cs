@@ -20,6 +20,8 @@ namespace C_InANutShell.Testing
             System.Console.WriteLine(arr.Length);
             arr.Append(new int[] {1, 2});
             System.Console.WriteLine(arr.Length);
+
+            System.Console.WriteLine(arr.ToString());
         }
     }
 }

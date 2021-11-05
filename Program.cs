@@ -11,8 +11,25 @@ namespace C_InANutShell
     {
         static void Main(string[] args)
         {
-             new TestsContainer()
-                .AddTest(new DynamicArrayTest())
+             new TestPerformer()
+                .AddTest(
+                    test: new DynamicArrayTest(), 
+                    shouldBeExecuted: false)
+                .AddTest(
+                    test: new LinkedListTest(), 
+                    shouldBeExecuted: false)
+                .AddTest(
+                    test: new StackTest(),
+                    shouldBeExecuted: false
+                )
+                .AddTest(
+                    test: new QueueTest(),
+                    shouldBeExecuted: false
+                )
+                .AddTest(
+                    test: new GraphTest(),
+                    shouldBeExecuted: true
+                )
                 .Execute();
         }
     }

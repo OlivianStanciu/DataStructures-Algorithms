@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 
 namespace C_InANutShell.Arrays
 {
@@ -58,18 +59,21 @@ namespace C_InANutShell.Arrays
 
             _array[_length++] = item;
         }
-        public void Append(T[] items)
+        public void Append(IEnumerable<T> items)
         {
-            if ((items?.Length ?? 0) == 0)
+            if (items == null)
             {
                 throw new ArgumentNullException("items can not be null or empty");
             }
-
-            foreach (var item in items)
+            
+            IEnumerator<T> enumerator = items.GetEnumerator();
+            while (enumerator.MoveNext())
             {
-                Append(item);
+                Append(enumerator.Current);
             }
         }
+        public void Append(params T[] items) => this.Append((IEnumerable<T>)items);
+
         public int IndexOf(T item)
         {
             for (int i = 0; i < _length; i++)
@@ -119,7 +123,15 @@ namespace C_InANutShell.Arrays
 
         public override string ToString()
         {
-            return base.ToString();
+           StringBuilder sb = new StringBuilder("[");
+
+           for (int i = 0; i < _length - 1; i++)
+           {
+               sb.Append($"{_array[i].ToString()}, ");
+           }
+           sb.Append($"{_array[_length - 1].ToString()}]");
+           
+           return sb.ToString();
         }
     }
 }
