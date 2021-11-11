@@ -28,6 +28,10 @@ namespace C_InANutShell
                 )
                 .AddTest(
                     test: new GraphTest(),
+                    shouldBeExecuted: false
+                )
+                .AddTest(
+                    test: new UnionTest(),
                     shouldBeExecuted: true
                 )
                 .Execute();
