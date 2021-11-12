@@ -211,52 +211,56 @@ namespace C_InANutShell.Queues
 
         public override string ToString()
         {
-            if (this.IsEmpty())
-            {
-                return string.Empty;
-            }
-
-            int depth = 1;
-            for (int index = this.Size - 1; index > 0; index = GetParentIndex(index))
-            {
-                depth++;
-            }
-
             StringBuilder sb = new StringBuilder();
+            ConstructFlatStringvisualization(0, ref sb);
+            string flatVisualisation = sb.ToString();
+            // flatVisualisation.TrimStart('/');
+            // flatVisualisation.TrimEnd('\\');
+            // var items = flatVisualisation.Split(new char[] {'/', '\\'}, StringSplitOptions.RemoveEmptyEntries);
+            
+            // sb.Clear();
+            
+            // int depth = 1;
+            // for (int index = this.Size - 1; index > 0; index = GetParentIndex(index))
+            // {
+            //     depth++;
+            // }
 
-            int currentDepth = 1;
+            // //print flatvisualisation for each depth, but only the elements contained in that depth 
+            // while(depth > 0)
+            // {
+            //     int nrOfElemsPerDepth = (int)Math.Pow(2, depth - 1);
+            //     for (int i = 0; i < length; i++)
+            //     {
+                    
+            //     }
+            //     depth--;
+            // }
 
-            while (currentDepth <= depth)
+            return flatVisualisation;
+        }
+
+        private void ConstructFlatStringvisualization(int rootIndex, ref StringBuilder sb) 
+        {
+            int leftChildIndex = rootIndex * 2 + 1;
+            int rightChildIndex = rootIndex * 2 + 2;
+
+            sb.Append("[");
+
+            if (HasChildAtIndex(rootIndex, leftChildIndex))
             {
-                var nrOfSpaces = (int)Math.Pow(2, depth - currentDepth + 1) / 2;
-                var noOfElems = (int)Math.Pow(2, currentDepth - 1);
-                if (!(currentDepth == depth))
-                {
-                    for (int j = 0; j < nrOfSpaces; j++)
-                        sb.Append(" ");
-                }
-
-                for (int index = noOfElems; 
-                    index <= (noOfElems * 2) - 1 && index > 0; 
-                    index++)
-                {   
-                    if (index <= this.Size)
-                    {
-                        sb.Append(_tree[index-1]);
-                    }
-                    else
-                    {
-                        sb.Append("*");
-                    }
-                    for (int j = 0; j < nrOfSpaces; j++)
-                            sb.Append(" ");
-                }
-                sb.AppendLine();
-                
-                currentDepth++;
+                ConstructFlatStringvisualization(leftChildIndex, ref sb);
             }
 
-           return sb.ToString();
+            sb.Append($" {_tree[rootIndex]} ");
+
+            if (HasChildAtIndex(rootIndex, rightChildIndex))
+            {
+                ConstructFlatStringvisualization(rightChildIndex, ref sb);
+            }
+
+            sb.Append("]");
+            
         }
     }
 }

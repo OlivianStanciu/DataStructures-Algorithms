@@ -32,6 +32,10 @@ namespace C_InANutShell
                 )
                 .AddTest(
                     test: new UnionTest(),
+                    shouldBeExecuted: false
+                )
+                .AddTest(
+                    test: new BinarySearchTree(),
                     shouldBeExecuted: true
                 )
                 .Execute();

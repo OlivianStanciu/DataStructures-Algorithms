@@ -55,6 +55,16 @@ namespace C_InANutShell.Testing
             System.Console.WriteLine(heap.ToString());
             heap.Poll();
             System.Console.WriteLine(heap.ToString());
+            heap.Poll();
+            System.Console.WriteLine(heap.ToString());
+            heap.Poll();
+            System.Console.WriteLine(heap.ToString());
+            heap.Poll();
+            System.Console.WriteLine(heap.ToString());
+            heap.Poll();
+            System.Console.WriteLine(heap.ToString());
+            heap.Poll();
+            System.Console.WriteLine(heap.ToString());
         }
     }
 }

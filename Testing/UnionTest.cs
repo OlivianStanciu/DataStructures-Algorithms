@@ -13,7 +13,7 @@ namespace C_InANutShell.Testing
                 set[i] = ((char)((int)'a' + i)).ToString();
             }
 
-            UnionFind<string> unionFind = new UnionFind<string>(set, true);
+            UnionFind<string> unionFind = new UnionFind<string>(items: set, usePathCompression: true);
 
             unionFind.Union("a", "b");
             unionFind.Union("c", "d");

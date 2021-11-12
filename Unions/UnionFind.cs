@@ -8,10 +8,13 @@ namespace C_InANutShell.Unions
         Dictionary<T, int> _indexMap;
 
         //if _set[i] == i -> i is rootNode
-        int[] _set;
+        private int[] _set;
         //stores the size for each subSet
-        int[] _subSetSize;
-        bool _usePathCompression;
+        private int[] _subSetSize;
+        private bool _usePathCompression;
+        private int _componentsCounts;
+
+        public int ComponentsCount => _componentsCounts;
         public UnionFind(T[] items, bool usePathCompression = true)
         {
             if (items == null)
@@ -20,6 +23,7 @@ namespace C_InANutShell.Unions
             }
 
             _usePathCompression = usePathCompression;
+            _componentsCounts = items.Length;
 
             _indexMap = new Dictionary<T, int>(items.Length);
             _set = new int[items.Length];
@@ -66,7 +70,8 @@ namespace C_InANutShell.Unions
             //update the size
             _subSetSize[biggerSubSetRoot] += GetSubSetSize(smallerSubSetRoot);
             _subSetSize[smallerSubSetRoot] = 0;
-
+            
+            _componentsCounts--;
         }
 
         //returns true if item1 is connected to item2
@@ -82,7 +87,11 @@ namespace C_InANutShell.Unions
             {
                 return itemIndex;
             }
-
+            if (_usePathCompression)
+            {
+                // [support for path compression], so if the item is not the root, setting the item to the root of it's parent
+                _set[itemIndex] = _set[_set[itemIndex]];
+            }
             //else find root of parent
             return FindRoot(_set[itemIndex]);
         }
