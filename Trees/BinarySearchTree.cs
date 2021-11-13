@@ -539,7 +539,7 @@ namespace C_InANutShell.Trees
                 
             }
 
-            // dig to the lowest element in the right subtree, 
+            // dig to the lowest element in the left subtree, 
             //and if a node has 2 children, chose the left one, and mark the right one as not resolved
             private void ResolveToBottomLeft(Node<T> node)
             {
