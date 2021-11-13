@@ -359,6 +359,7 @@ namespace C_InANutShell.Trees
         {
             return new InOrderEnumerator(this);
         }
+        
         // compatibility; returns an object
         IEnumerator IEnumerable.GetEnumerator()
         {
@@ -515,7 +516,7 @@ namespace C_InANutShell.Trees
 
                 Node<T> node = _stack.Peek();
 
-                // if node has its leftChild unresolved, resolve it first 
+                // if node has its rightChild unresolved, resolve it first 
                 if (_nodesWithUnsolvedRightTree.Contains(node))
                 {
                     ResolveToBottomLeft(node.RightChild);
@@ -598,7 +599,7 @@ namespace C_InANutShell.Trees
                     _queue.Enqueue(_node.LeftChild);
                 if(_node.RightChild != null)
                     _queue.Enqueue(_node.RightChild);
-                    
+
                 return true;
             }
 
