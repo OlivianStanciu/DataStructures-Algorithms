@@ -1,10 +1,11 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 
 namespace C_InANutShell.Trees
 {
-    public enum PrintOrder
+    public enum TraverseOrder
     {
         PreOrder,
         InOrder,
@@ -15,7 +16,8 @@ namespace C_InANutShell.Trees
     //binary tree that satisfies the binary search tree (BST) invariant
     //the left subtree has elements smaller than current node and
     //the right subtree has elements greater than current node
-    public class BinarySearchTree<T> where T : IComparable
+    public partial class BinarySearchTree<T> : IEnumerable<T>  
+        where T : IComparable
     {
         private class Node<T>
         {
@@ -32,7 +34,6 @@ namespace C_InANutShell.Trees
         public bool IsEmpty() => this.Size == 0;
 
         public int Depth => GetDepth(_root);
-
 
         public BinarySearchTree()
         {
@@ -92,7 +93,6 @@ namespace C_InANutShell.Trees
             _size--;
             return true;
         }
-
         private Node<T> DeleteItem(Node<T> node, T item)
         {
             int comparationResult = item.CompareTo(node.Data);
@@ -152,68 +152,6 @@ namespace C_InANutShell.Trees
         {
             return Search(item, _root) != null;
         }
-
-        public void Print(PrintOrder printOrder)
-        {   
-            if (this.IsEmpty())
-            {
-                System.Console.WriteLine("empty");
-            }
-            
-            var sb = new StringBuilder();
-            sb.Append($"{printOrder.ToString()}: ");
-
-            if (printOrder != PrintOrder.LevelOrder)
-            {
-                PrintRecursive(_root, printOrder, sb);
-            }
-            else // breath first search
-            {
-                Queue<Node<T>> queue = new Queue<Node<T>>();
-                queue.Enqueue(_root);
-                
-                // while !queue.IesEmpty();
-                while (queue.TryDequeue(out Node<T> node))
-                {
-                    sb.Append($"{node.Data} ");
-                    // enqueue left child
-                    if(node.LeftChild != null)
-                        queue.Enqueue(node.LeftChild);
-                    // enqueue right child
-                    if(node.RightChild != null)
-                        queue.Enqueue(node.RightChild);
-                }
-            }
-            
-            System.Console.WriteLine(sb.ToString());
-        }
-        private void PrintRecursive(Node<T> node, PrintOrder printOrder, StringBuilder sb)
-        {
-            if (node == null)
-            {
-                return;
-            }
-            
-            var printStr = string.Empty;
-            if (printOrder == PrintOrder.PreOrder) // preorder
-            {
-                sb.Append($"{node.Data} ");
-                PrintRecursive(node.LeftChild, printOrder, sb);
-                PrintRecursive(node.RightChild, printOrder, sb);
-            } 
-            else if(printOrder == PrintOrder.InOrder) // inrder => retusns the items sorted (ascending)
-            {
-                PrintRecursive(node.LeftChild, printOrder, sb);
-                sb.Append($"{node.Data} ");
-                PrintRecursive(node.RightChild, printOrder, sb);
-            }
-            else //postorder
-            {
-                PrintRecursive(node.LeftChild, printOrder, sb);
-                PrintRecursive(node.RightChild, printOrder, sb);
-                sb.Append($"{node.Data} ");
-            }
-        }
         private Node<T> Search(T item, Node<T> node)
         {
             if (node == null)
@@ -235,7 +173,70 @@ namespace C_InANutShell.Trees
             // comparationResult == 0;
             return node;
         }
-        
+
+        // TODO: Implement iterators for each order :D 
+        public void Traverse(TraverseOrder traverseOrder)
+        {   
+            if (this.IsEmpty())
+            {
+                System.Console.WriteLine("empty");
+            }
+            
+            var sb = new StringBuilder();
+            sb.Append($"{traverseOrder.ToString()}: ");
+
+            if (traverseOrder != TraverseOrder.LevelOrder)
+            {
+                TraverseRecursive(_root, traverseOrder, sb);
+            }
+            else // breath first search
+            {
+                Queue<Node<T>> queue = new Queue<Node<T>>();
+                queue.Enqueue(_root);
+                
+                // while !queue.IesEmpty();
+                while (queue.TryDequeue(out Node<T> node))
+                {
+                    sb.Append($"{node.Data} ");
+                    // enqueue left child
+                    if(node.LeftChild != null)
+                        queue.Enqueue(node.LeftChild);
+                    // enqueue right child
+                    if(node.RightChild != null)
+                        queue.Enqueue(node.RightChild);
+                }
+            }
+            
+            System.Console.WriteLine(sb.ToString());
+        }
+        private void TraverseRecursive(Node<T> node, TraverseOrder printOrder, StringBuilder sb)
+        {
+            if (node == null)
+            {
+                return;
+            }
+            
+            var printStr = string.Empty;
+            if (printOrder == TraverseOrder.PreOrder) // preorder
+            {
+                sb.Append($"{node.Data} ");
+                TraverseRecursive(node.LeftChild, printOrder, sb);
+                TraverseRecursive(node.RightChild, printOrder, sb);
+            } 
+            else if(printOrder == TraverseOrder.InOrder) // inrder => retusns the items sorted (ascending)
+            {
+                TraverseRecursive(node.LeftChild, printOrder, sb);
+                sb.Append($"{node.Data} ");
+                TraverseRecursive(node.RightChild, printOrder, sb);
+            }
+            else //postorder
+            {
+                TraverseRecursive(node.LeftChild, printOrder, sb);
+                TraverseRecursive(node.RightChild, printOrder, sb);
+                sb.Append($"{node.Data} ");
+            }
+        }
+            
         
         public override string ToString()
         {
@@ -345,6 +346,274 @@ namespace C_InANutShell.Trees
                 int rightDepth = GetDepth(root.RightChild);
     
                 return Math.Max(leftDepth, rightDepth) + 1;
+            }
+        }
+
+        private Node<T> GetRoot() => _root;
+
+        /// <summary>
+        /// Returns a default InOrderEnumerator
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerator<T> GetEnumerator()
+        {
+            return new InOrderEnumerator(this);
+        }
+        // compatibility; returns an object
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return this.GetEnumerator();
+        }
+
+        public IEnumerator<T> GetEnumerator(TraverseOrder traverseOrder)
+        {
+            return traverseOrder switch
+            {
+                TraverseOrder.InOrder => new InOrderEnumerator(this),
+                TraverseOrder.PreOrder => new PreOrderEnumerator(this),
+                TraverseOrder.PostOrder => new PostOrderEnumerator(this),
+                TraverseOrder.LevelOrder => new LeverOrderEnumerater(this),
+                _ => new InOrderEnumerator(this)
+            };
+        }
+
+        private abstract class OrderEnumeratorBase : IEnumerator<T>
+        {
+            protected Stack<Node<T>> _stack;
+            protected Node<T> _node;
+            protected BinarySearchTree<T> _bst;
+
+            public T Current => _node != null ? 
+                _node.Data : throw new NullReferenceException("The Enumerator is empty. Call MoveNext() first");
+            object IEnumerator.Current => this.Current;
+
+            public OrderEnumeratorBase(BinarySearchTree<T> bst)
+            {
+                _bst = bst;
+                _stack = new Stack<Node<T>>();
+            }
+
+            public virtual void Dispose()
+            {
+                _stack = null;
+                _node = null;
+                _bst = null;
+            }
+
+            public abstract bool MoveNext();
+
+            public abstract void Reset();
+        }
+
+        // Root, Left, Right
+        private class PreOrderEnumerator : OrderEnumeratorBase
+        {
+            public PreOrderEnumerator(BinarySearchTree<T> bst) : base(bst)
+            {
+                this.Reset();
+            }
+
+            public override bool MoveNext()
+            {
+                // all nodes were already processed, or bst is empty
+                if (_stack.Count == 0)
+                    return false;
+
+                _node = _stack.Pop();
+                
+                // push the left child last, so it would be the one popped next time
+                if (_node.RightChild != null)
+                    _stack.Push(_node.RightChild);
+                if (_node.LeftChild != null)
+                    _stack.Push(_node.LeftChild);
+
+                return true;
+            }
+            public override void Reset()
+            {
+                _stack.Clear();
+                _stack.Push(_bst.GetRoot());
+                _node = null;
+            }
+        }
+        
+        // Left, Root, Right
+        private class InOrderEnumerator : OrderEnumeratorBase
+        {
+            public InOrderEnumerator(BinarySearchTree<T> bst) : base(bst)
+            {
+                this.Reset();
+            }
+
+            public override bool MoveNext()
+            {
+                // all nodes were processed, or bst is empty
+                if (_stack.Count == 0)
+                    return false;
+                
+                // smallest node
+                _node = _stack.Pop();
+
+                // add the right child to the stack
+                if (_node.RightChild != null)
+                {
+                    if (_bst.IsLeaf(_node.RightChild))
+                    {
+                        _stack.Push(_node.RightChild);
+                    }
+                    else
+                    {
+                        ResolveLeftSubtree(_node.RightChild);
+                    }
+                }
+                
+                return true;
+            }
+
+            public override void Reset()
+            {
+                _stack.Clear();
+                ResolveLeftSubtree(_bst.GetRoot());
+                _node = null;
+            }
+
+            // dig to the most left node, and add all the nodes to the stack;
+            private void ResolveLeftSubtree(Node<T> node)
+            {
+                while (node != null)
+                {
+                    _stack.Push(node);
+                    node = node.LeftChild;
+                }
+            }
+
+            public void Dispose()
+            {
+                _bst = null;
+                _stack = null;
+                _node = null;
+            }
+        }
+
+        // Left, Right, Root
+        private class PostOrderEnumerator : OrderEnumeratorBase
+        {           
+            HashSet<Node<T>> _nodesWithUnsolvedRightTree;
+            public PostOrderEnumerator(BinarySearchTree<T> bst) : base(bst)
+            {
+                _nodesWithUnsolvedRightTree = new HashSet<Node<T>>();
+                this.Reset();
+            }
+
+            public override bool MoveNext()
+            {
+                // all nodes were already processed, or bst is empty
+                if (_stack.Count == 0)
+                {
+                    return false;
+                }
+
+                Node<T> node = _stack.Peek();
+
+                // if node has its leftChild unresolved, resolve it first 
+                if (_nodesWithUnsolvedRightTree.Contains(node))
+                {
+                    ResolveToBottomLeft(node.RightChild);
+                    // remove the mark
+                    _nodesWithUnsolvedRightTree.Remove(node);
+                }
+
+                _node = _stack.Pop();
+
+                return true;
+            }
+
+            public override void Reset()
+            {
+                _node = null;
+                _stack.Clear();
+                _nodesWithUnsolvedRightTree.Clear();
+                //add all the nodes to the stack
+                ResolveToBottomLeft(_bst.GetRoot());
+                
+            }
+
+            // dig to the lowest element in the right subtree, 
+            //and if a node has 2 children, chose the left one, and mark the right one as not resolved
+            private void ResolveToBottomLeft(Node<T> node)
+            {
+                while (node != null)
+                {   
+                    _stack.Push(node);
+                    if (node.LeftChild != null && node.RightChild != null)
+                    {
+                        //mark the rightChild as unsolved
+                        _nodesWithUnsolvedRightTree.Add(node);
+                        node = node.LeftChild;
+                    }
+                    else if(node.LeftChild != null)
+                        node = node.LeftChild;
+                    else
+                        node = node = node.RightChild;
+                }
+            }
+
+
+            public override void Dispose()
+            {
+                base.Dispose();
+                _nodesWithUnsolvedRightTree = null;
+            }
+        }
+
+        // Breath First Search
+        private class LeverOrderEnumerater : IEnumerator<T>
+        {
+            private BinarySearchTree<T> _bst;
+            private Queue<Node<T>> _queue;
+            private Node<T> _node;
+
+            public T Current => _node != null ? 
+                _node.Data : throw new NullReferenceException("The Enumerator is empty. Call MoveNext() first");
+
+            object IEnumerator.Current => this.Current;
+
+            public LeverOrderEnumerater(BinarySearchTree<T> bst)
+            {
+                _queue = new Queue<Node<T>>();
+                _bst = bst;
+                this.Reset();
+            }
+
+            public bool MoveNext()
+            {
+                // all items were processed, or the queue is empty
+                if (_queue.Count == 0)
+                {
+                    return false;
+                }
+
+                _node = _queue.Dequeue();
+                if(_node.LeftChild != null)
+                    _queue.Enqueue(_node.LeftChild);
+                if(_node.RightChild != null)
+                    _queue.Enqueue(_node.RightChild);
+                    
+                return true;
+            }
+
+            public void Reset()
+            {
+                _queue.Clear();
+                _queue.Enqueue(_bst.GetRoot());
+                _node = null;
+            }
+
+            public void Dispose()
+            {
+                _bst = null;
+                _queue = null;
+                _node = null;
             }
         }
     }

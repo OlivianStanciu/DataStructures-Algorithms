@@ -37,20 +37,20 @@ namespace C_InANutShell.Unions
             }
         }
 
-        //union the 2 disjoints sets
+        // union the 2 disjoints sets
         public void Union(T item1, T item2)
         {
-            //if already in the same Group, return, so that a cycle would not be created
+            // if already in the same Group, return, so that a cycle would not be created
             if (this.Find(item1, item2))
             {
                 return;
             }
 
-            //assume smaller is set containing item2
+            // assume that the smaller is set containing item2 (item2 < item 1)
             var biggerSubSetRoot = FindRoot(_indexMap[item1]);
             var smallerSubSetRoot = FindRoot(_indexMap[item2]); 
 
-            //correct if item2 < item1
+            // correct the assumption if item2 > item1
             if (GetSubSetSize(smallerSubSetRoot) > GetSubSetSize(biggerSubSetRoot))
             {
                 int temp = smallerSubSetRoot;
@@ -67,10 +67,11 @@ namespace C_InANutShell.Unions
                 _set[_indexMap[item1]] = _set[_indexMap[item2]] = biggerSubSetRoot;
             }
 
-            //update the size
+            // update the size
             _subSetSize[biggerSubSetRoot] += GetSubSetSize(smallerSubSetRoot);
             _subSetSize[smallerSubSetRoot] = 0;
             
+            // decrease the number of total subsets, since the smaller subSet was merget into the bigger one
             _componentsCounts--;
         }
 
@@ -82,14 +83,14 @@ namespace C_InANutShell.Unions
 
         private int FindRoot(int itemIndex)
         {
-            //if root return itself
+            //if root return itself; root will point to its index
             if (_set[itemIndex] == itemIndex)
             {
                 return itemIndex;
             }
             if (_usePathCompression)
             {
-                // [support for path compression], so if the item is not the root, setting the item to the root of it's parent
+                // [support for path compression], so if the item is not the root, setting the item to the root of its parent
                 _set[itemIndex] = _set[_set[itemIndex]];
             }
             //else find root of parent
