@@ -433,7 +433,11 @@ namespace C_InANutShell.Trees
             public override void Reset()
             {
                 _stack.Clear();
-                _stack.Push(_bst.GetRoot());
+
+                var root = _bst.GetRoot();
+                if (root != null)
+                    _stack.Push(root);
+                
                 _node = null;
             }
         }
@@ -606,7 +610,11 @@ namespace C_InANutShell.Trees
             public void Reset()
             {
                 _queue.Clear();
-                _queue.Enqueue(_bst.GetRoot());
+                
+                var root = _bst.GetRoot();
+                if (root != null)
+                    _queue.Enqueue(root);
+                
                 _node = null;
             }
 
