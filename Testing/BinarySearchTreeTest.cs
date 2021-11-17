@@ -16,6 +16,20 @@ namespace C_InANutShell.Testing
             //     bst.Insert(rand.Next(0, 15));
             // }
 
+/////////////////////////////////// GRAPH ///////////////////////////////////////
+//                                           14  
+//                                          /  \
+//                                      ___11   15  
+//                                     /     \   \
+//                                    7      13   16
+//                                     \     /
+//                                     10   12        
+//                                     /  
+//                                    8
+//                                     \         
+//                                      9        
+/////////////////////////////////// GRAPH ///////////////////////////////////////
+
             bst.Insert(14);
             bst.Insert(11);
             bst.Insert(15);
@@ -30,12 +44,12 @@ namespace C_InANutShell.Testing
 
             System.Console.WriteLine(bst.ToString());
             
-            bst.Traverse(TraverseOrder.PreOrder);
-            bst.Traverse(TraverseOrder.InOrder); // sorts the tree
-            bst.Traverse(TraverseOrder.PostOrder);
-            bst.Traverse(TraverseOrder.LevelOrder); // Breath First Search 
+            bst.TraverseAndPrint(TraverseOrder.PreOrder);
+            bst.TraverseAndPrint(TraverseOrder.InOrder); // sorts the tree
+            bst.TraverseAndPrint(TraverseOrder.PostOrder);
+            bst.TraverseAndPrint(TraverseOrder.LevelOrder); // Breath First Search 
 
-            TraverseOrder tOrder = TraverseOrder.LevelOrder;
+            TraverseOrder tOrder = TraverseOrder.PostOrder;
             using (var enumerator = bst.GetEnumerator(tOrder))
             {
                 var sb = new StringBuilder();
@@ -43,15 +57,11 @@ namespace C_InANutShell.Testing
                 {
                     sb.Append($"{enumerator.Current} ");
                 }
-                System.Console.WriteLine($"Traversal order[{tOrder.ToString()}]: {sb.ToString()}");
+                System.Console.WriteLine($"Traversal[{tOrder.ToString()}]: {sb.ToString()}");
             }
 
-            
-
-            System.Console.WriteLine(bst.Delete(5));
+            System.Console.WriteLine(bst.Delete(11));
             System.Console.WriteLine(bst.ToString());
-
-            bst.GetEnumerator();
 
         }
     }

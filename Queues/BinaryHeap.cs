@@ -164,10 +164,10 @@ namespace C_InANutShell.Queues
                 smallestChildIndex = rightChildIndex;
             }
             //stop if does not have a leftChild (so cannot sink anymore)
-            //  (implicitly not a rightChild as well since rightChildIndex < leftChildIndex)
-            //or if item <= lefChildIndex
+            //  (implicitly not a rightChild as well since rightChildIndex > leftChildIndex)
+            //or if item <= smallestChild
             if (!HasChildAtIndex(itemIndex, leftChildIndex) ||
-                Compare(_tree[itemIndex], _tree[leftChildIndex]) <= 0)
+                Compare(_tree[itemIndex], _tree[smallestChildIndex]) <= 0)
             {
                 return;
             }

@@ -16,7 +16,7 @@ namespace C_InANutShell.Trees
     //binary tree that satisfies the binary search tree (BST) invariant
     //the left subtree has elements smaller than current node and
     //the right subtree has elements greater than current node
-    public partial class BinarySearchTree<T> : IEnumerable<T>  
+    public partial class BinarySearchTree<T> : IEnumerable<T>
         where T : IComparable
     {
         private class Node<T>
@@ -175,7 +175,7 @@ namespace C_InANutShell.Trees
         }
 
         // TODO: Implement iterators for each order :D 
-        public void Traverse(TraverseOrder traverseOrder)
+        internal void TraverseAndPrint(TraverseOrder traverseOrder)
         {   
             if (this.IsEmpty())
             {
@@ -237,7 +237,7 @@ namespace C_InANutShell.Trees
             }
         }
             
-        
+
         public override string ToString()
         {
             var depth = this.Depth;
@@ -281,7 +281,7 @@ namespace C_InANutShell.Trees
             finalBuilder.AppendLine($"depth: {this.Depth}");
             return finalBuilder.ToString();
 
-            void ComposeTree(Node<T> root, ref StringBuilder sb, ref List<string>[] nodesPerDepth)
+            void ComposeTree(Node<T> root, ref StringBuilder sb, ref List<string>[] depthNodes)
             {
                 if (root == null)
                 {
@@ -291,18 +291,18 @@ namespace C_InANutShell.Trees
 
                 if (root.LeftChild != null)
                 { 
-                    ComposeTree(root.LeftChild, ref sb, ref nodesPerDepth);
+                    ComposeTree(root.LeftChild, ref sb, ref depthNodes);
                 }
 
                 sb.Append($"{root.Data.ToString()} ");              
     
                 var nodeLevel = SearchNodeIndex(root.Data, _root);
-                nodesPerDepth[nodeLevel].Add(root.Data.ToString());
+                depthNodes[nodeLevel].Add(root.Data.ToString());
 
                 if (root.RightChild != null)
                 {
                     
-                    ComposeTree(root.RightChild, ref sb, ref nodesPerDepth);
+                    ComposeTree(root.RightChild, ref sb, ref depthNodes);
                 }
             }
             
@@ -316,34 +316,28 @@ namespace C_InANutShell.Trees
 
             int SearchNodeIndex(T item, Node<T> node)
             {
-            if (item.CompareTo(node.Data) == 0)
-            {
-                return 0;
-            }
-    
-            if (item.CompareTo(node.Data) < 0)
-            {
-                return node.LeftChild == null ? -1 : SearchNodeIndex(item, node.LeftChild) + 1;
-            }
+                if (item.CompareTo(node.Data) == 0)
+                    return 0;
+        
+                if (item.CompareTo(node.Data) < 0)
+                    return node.LeftChild == null ? -1 : SearchNodeIndex(item, node.LeftChild) + 1;
 
-            if (item.CompareTo(node.Data) > 0)
-            {
-                return node.RightChild == null ? -1 : SearchNodeIndex(item, node.RightChild) + 1;
-            }
+                if (item.CompareTo(node.Data) > 0)
+                    return node.RightChild == null ? -1 : SearchNodeIndex(item, node.RightChild) + 1;
 
-            return -1;
-        }
+                return -1;
+            }
         }
 
-        private int GetDepth(Node<T> root)
+        private int GetDepth(Node<T> node)
         {
-            if (root == null)
+            if (node == null)
                 return 0;
             else
             {
                 /* compute the depth of each subtree */
-                int leftDepth = GetDepth(root.LeftChild);
-                int rightDepth = GetDepth(root.RightChild);
+                int leftDepth = GetDepth(node.LeftChild);
+                int rightDepth = GetDepth(node.RightChild);
     
                 return Math.Max(leftDepth, rightDepth) + 1;
             }
@@ -378,25 +372,23 @@ namespace C_InANutShell.Trees
             };
         }
 
-        private abstract class OrderEnumeratorBase : IEnumerator<T>
+
+        #region Ennumerator abstraction
+        private abstract class EnumeratorBase : IEnumerator<T>
         {
-            protected Stack<Node<T>> _stack;
             protected Node<T> _node;
             protected BinarySearchTree<T> _bst;
 
-            public T Current => _node != null ? 
+             public T Current => _node != null ? 
                 _node.Data : throw new NullReferenceException("The Enumerator is empty. Call MoveNext() first");
             object IEnumerator.Current => this.Current;
-
-            public OrderEnumeratorBase(BinarySearchTree<T> bst)
+            public EnumeratorBase(BinarySearchTree<T> bst)
             {
                 _bst = bst;
-                _stack = new Stack<Node<T>>();
             }
 
             public virtual void Dispose()
             {
-                _stack = null;
                 _node = null;
                 _bst = null;
             }
@@ -405,9 +397,39 @@ namespace C_InANutShell.Trees
 
             public abstract void Reset();
         }
+        private abstract class StackEnumeratorBase : EnumeratorBase
+        {
+            protected Stack<Node<T>> _stack;
 
+            public StackEnumeratorBase(BinarySearchTree<T> bst) : base(bst)
+            {
+                _stack = new Stack<Node<T>>();
+            }
+
+            public override void Dispose()
+            {
+                base.Dispose();
+                _stack = null;
+            }
+        }
+        private abstract class QueueEnumeratorBase : EnumeratorBase
+        {
+            protected Queue<Node<T>> _queue;
+
+            public QueueEnumeratorBase(BinarySearchTree<T> bst) : base(bst)
+            {
+                _queue = new Queue<Node<T>>();
+            }
+
+            public override void Dispose()
+            {
+                base.Dispose();
+                _queue = null;
+            }
+        }
+        #endregion
         // Root, Left, Right
-        private class PreOrderEnumerator : OrderEnumeratorBase
+        private class PreOrderEnumerator : StackEnumeratorBase
         {
             public PreOrderEnumerator(BinarySearchTree<T> bst) : base(bst)
             {
@@ -443,7 +465,7 @@ namespace C_InANutShell.Trees
         }
         
         // Left, Root, Right
-        private class InOrderEnumerator : OrderEnumeratorBase
+        private class InOrderEnumerator : StackEnumeratorBase
         {
             public InOrderEnumerator(BinarySearchTree<T> bst) : base(bst)
             {
@@ -459,17 +481,10 @@ namespace C_InANutShell.Trees
                 // smallest node
                 _node = _stack.Pop();
 
-                // add the right child to the stack
+                // add the smallest elem in the right subtree to the stack
                 if (_node.RightChild != null)
                 {
-                    if (_bst.IsLeaf(_node.RightChild))
-                    {
-                        _stack.Push(_node.RightChild);
-                    }
-                    else
-                    {
-                        ResolveLeftSubtree(_node.RightChild);
-                    }
+                    DigLeft(_node.RightChild);
                 }
                 
                 return true;
@@ -478,12 +493,12 @@ namespace C_InANutShell.Trees
             public override void Reset()
             {
                 _stack.Clear();
-                ResolveLeftSubtree(_bst.GetRoot());
+                DigLeft(_bst.GetRoot());
                 _node = null;
             }
 
             // dig to the most left node, and add all the nodes to the stack;
-            private void ResolveLeftSubtree(Node<T> node)
+            private void DigLeft(Node<T> node)
             {
                 while (node != null)
                 {
@@ -491,17 +506,10 @@ namespace C_InANutShell.Trees
                     node = node.LeftChild;
                 }
             }
-
-            public void Dispose()
-            {
-                _bst = null;
-                _stack = null;
-                _node = null;
-            }
         }
 
         // Left, Right, Root
-        private class PostOrderEnumerator : OrderEnumeratorBase
+        private class PostOrderEnumerator : StackEnumeratorBase
         {           
             HashSet<Node<T>> _nodesWithUnsolvedRightTree;
             public PostOrderEnumerator(BinarySearchTree<T> bst) : base(bst)
@@ -559,7 +567,7 @@ namespace C_InANutShell.Trees
                     else if(node.LeftChild != null)
                         node = node.LeftChild;
                     else
-                        node = node = node.RightChild;
+                        node = node.RightChild;
                 }
             }
 
@@ -572,25 +580,14 @@ namespace C_InANutShell.Trees
         }
 
         // Breath First Search
-        private class LeverOrderEnumerater : IEnumerator<T>
+        private class LeverOrderEnumerater : QueueEnumeratorBase
         {
-            private BinarySearchTree<T> _bst;
-            private Queue<Node<T>> _queue;
-            private Node<T> _node;
-
-            public T Current => _node != null ? 
-                _node.Data : throw new NullReferenceException("The Enumerator is empty. Call MoveNext() first");
-
-            object IEnumerator.Current => this.Current;
-
-            public LeverOrderEnumerater(BinarySearchTree<T> bst)
+            public LeverOrderEnumerater(BinarySearchTree<T> bst) : base(bst)
             {
-                _queue = new Queue<Node<T>>();
-                _bst = bst;
                 this.Reset();
             }
 
-            public bool MoveNext()
+            public override bool MoveNext()
             {
                 // all items were processed, or the queue is empty
                 if (_queue.Count == 0)
@@ -606,8 +603,8 @@ namespace C_InANutShell.Trees
 
                 return true;
             }
-
-            public void Reset()
+            
+            public override void Reset()
             {
                 _queue.Clear();
                 
@@ -615,13 +612,6 @@ namespace C_InANutShell.Trees
                 if (root != null)
                     _queue.Enqueue(root);
                 
-                _node = null;
-            }
-
-            public void Dispose()
-            {
-                _bst = null;
-                _queue = null;
                 _node = null;
             }
         }

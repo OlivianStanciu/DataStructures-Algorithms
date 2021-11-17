@@ -41,12 +41,23 @@ namespace C_InANutShell.Testing
             // heap.Insert(-1);
             // System.Console.WriteLine(heap.ToString());
 
-            for (int i = 0; i < 15; i++)
-            {
-                heap.Insert(i);
-            }
-            System.Console.WriteLine(heap.ToString());
+            // for (int i = 0; i < 15; i++)
+            // {
+            //     heap.Insert(i);
+            // }
 
+            heap.Insert(0);
+            heap.Insert(1);
+            heap.Insert(2);
+            heap.Insert(4);
+            heap.Insert(2);
+            heap.Insert(5);
+            heap.Insert(3);
+            
+            System.Console.WriteLine(heap.ToString());
+            heap.Delete(1);
+            System.Console.WriteLine(heap.ToString());
+            
             heap.Poll();
             System.Console.WriteLine(heap.ToString());
             heap.Poll();
