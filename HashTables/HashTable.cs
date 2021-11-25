@@ -86,10 +86,9 @@ namespace C_InANutShell.HashTables
                 throw new NullReferenceException("Key cannot be null");
 
             if(this.Contains(key))
-                throw new ArgumentException("The HashMap already contains the provided key");
+                throw new ArgumentException("The HashTable already contains the provided key");
 
             // if the treshold is met, double the capacity
-            
             if (_size >= _resizeThreshold)
                 DoubleHashTableCapacity();
             
@@ -99,8 +98,6 @@ namespace C_InANutShell.HashTables
             // lazy initialization
             if(_hashTable[hashIndex] == null)
                 _hashTable[hashIndex] = new LinkedList<HashItem<TKey, TVal>>();
-            
-            //check if contains
 
             _hashTable[hashIndex].AddLast(new HashItem<TKey, TVal>()
             {
@@ -122,7 +119,7 @@ namespace C_InANutShell.HashTables
             var hashItem = GetHashItemForKey(key);
 
             if(hashItem == null)
-                throw new ArgumentException("The HashMap does not contain the provided key");
+                throw new ArgumentException("The HashTable does not contain the provided key");
 
             var result = hashItem.Value;
             var keyHashIndex = ComputeHashIndex(hashItem.Hash);
@@ -144,7 +141,7 @@ namespace C_InANutShell.HashTables
             HashItem<TKey, TVal> hashItem = GetHashItemForKey(key);
 
             if(hashItem == null)
-                throw new ArgumentException("The HashMap does not contain the provided key");
+                throw new ArgumentException("The HashTable does not contain the provided key");
 
             return hashItem.Value;
         }
