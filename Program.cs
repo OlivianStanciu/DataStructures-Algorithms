@@ -20,7 +20,7 @@ namespace C_InANutShell
                 )
                 .AddTest(
                     test: new QueueTest(),
-                    shouldBeExecuted: true
+                    shouldBeExecuted: false
                 )
                 .AddTest(
                     test: new GraphTest(),
@@ -36,7 +36,7 @@ namespace C_InANutShell
                 )
                 .AddTest(
                     test: new HashTableTest(),
-                    shouldBeExecuted: false
+                    shouldBeExecuted: true
                 )
                 .AddTest(
                     test: new ArraySortingTest(),

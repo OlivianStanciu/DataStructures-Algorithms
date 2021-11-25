@@ -13,19 +13,19 @@ namespace C_InANutShell.Trees
         LevelOrder
     }
 
+    class Node<T>
+    {
+        public Node<T> LeftChild { get; set; }
+        public Node<T> RightChild { get; set; }
+        public T Data { get; set; }
+    }
+
     //binary tree that satisfies the binary search tree (BST) invariant
     //the left subtree has elements smaller than current node and
     //the right subtree has elements greater than current node
     public partial class BinarySearchTree<T> : IEnumerable<T>
         where T : IComparable
     {
-        private class Node<T>
-        {
-            public Node<T> LeftChild { get; set; }
-            public Node<T> RightChild { get; set; }
-            public T Data { get; set; }
-        }
-
         private Node<T> _root;
         
         private int _size;
