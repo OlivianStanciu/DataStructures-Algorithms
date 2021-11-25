@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace C_InANutShell.HashTables
 {
@@ -192,5 +193,24 @@ namespace C_InANutShell.HashTables
             get => this.Get(key);
         }
         #endregion
+
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+
+            foreach (var linkedList in _hashTable)
+            {
+                if((linkedList?.Count ?? 0) == 0)
+                    continue;
+                
+                foreach (var hashItem in linkedList)
+                {
+                    sb.Append($"Key: \"{hashItem.Key.ToString()}\" -> Value: \"{hashItem.Value.ToString()}\"");
+                    sb.AppendLine();
+                }
+            }
+
+            return sb.ToString();
+        }
     }
 }
