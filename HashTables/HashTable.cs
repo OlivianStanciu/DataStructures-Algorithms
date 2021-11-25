@@ -205,8 +205,7 @@ namespace C_InANutShell.HashTables
                 
                 foreach (var hashItem in linkedList)
                 {
-                    sb.Append($"Key: \"{hashItem.Key.ToString()}\" -> Value: \"{hashItem.Value.ToString()}\"");
-                    sb.AppendLine();
+                    sb.AppendLine($"Key: \"{hashItem.Key.ToString()}\" -> Value: \"{hashItem.Value.ToString()}\"");
                 }
             }
 
