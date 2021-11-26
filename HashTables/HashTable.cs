@@ -51,8 +51,8 @@ namespace C_InANutShell.HashTables
         }
 
         public int Size => _size;
-
-        public bool IsEmpty() => _size == 0; 
+        
+        public bool IsEmpty() => _size == 0;
         
         public bool ContainsKey(TKey key) => GetHashItemForKey(key) != null;
 
@@ -109,7 +109,7 @@ namespace C_InANutShell.HashTables
 
             _size++;
         }
-
+        
         public TVal Remove(TKey key)
         {
             if(key == null)
@@ -152,18 +152,52 @@ namespace C_InANutShell.HashTables
             // compute object's hash;
             return key.GetHashCode();
         }
+
         private int ComputeHashIndex(int hash)
         {
-             // strip the negative sign; since an int is 8 bytes, just negate the first bit (0111 1111 1111...) => 7FFFFFF
+             // strip the negative sign; since an int is 8 bytes, just negate the first bit (0111 1111 ... 1111) => 7FFFFFF
             hash = hash & 0x7FFFFFF;
             // convert to interval [0, capacity], inclusive
             hash = hash % _capacity;
             return hash;
         }
-        private int ComputeHashIndexFromKey(TKey key)
+
+        private int ComputeHashIndexFromKey(TKey key) => ComputeHashIndex(ComputeHash(key));
+
+        public IEnumerable<TKey> GetKeys()
         {
-            int hash = ComputeHash(key);
-            return ComputeHashIndex(hash);
+            List<TKey> result = new List<TKey>();
+
+            foreach (var linkedList in _hashTable)
+            {
+                if((linkedList?.Count ?? 0) == 0)
+                    continue;
+
+                foreach (var hashItem in linkedList)
+                {
+                    result.Add(hashItem.Key);
+                }
+            }
+
+            return result;
+        }
+
+        public IEnumerable<TVal> GetValues()
+        {
+            List<TVal> result = new List<TVal>();
+
+            foreach (var linkedList in _hashTable)
+            {
+                if((linkedList?.Count ?? 0) == 0)
+                    continue;
+
+                foreach (var hashItem in linkedList)
+                {
+                    result.Add(hashItem.Value);
+                }
+            }
+
+            return result;
         }
 
         private void DoubleHashTableCapacity()
@@ -174,15 +208,15 @@ namespace C_InANutShell.HashTables
             var currentHashTable = _hashTable;
             _hashTable = new LinkedList<HashItem<TKey, TVal>>[_capacity];
             
+            // rehash every item
             foreach (var linkedList in currentHashTable)
             {
                 if(linkedList == null)
                     continue;
                 
-                var linkedListEnumerator = linkedList.GetEnumerator();
-                while(linkedListEnumerator.MoveNext())
+                foreach (var hashItem in linkedList)
                 {
-                    this.Add(linkedListEnumerator.Current.Key, linkedListEnumerator.Current.Value);
+                    this.Add(hashItem.Key, hashItem.Value);
                 }
             }
         }
